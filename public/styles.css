@@ -1,0 +1,57 @@
+@charset "utf-8";
+/* CSS Document */
+
+.mainDiv {
+	width:100%;
+	border:0px;
+	padding-left:30px;
+	padding-right:30px;
+}
+
+.opID {
+	width:200px;
+}
+
+.menuButton {
+	width:100%;
+	border-radius:0px;
+}
+
+.menu {
+	border-radius:0px;
+	padding-top:0px;
+	padding-bottom:0px;
+}
+
+
+.connection {
+	padding-top:0px;
+	padding-bottom:0px;
+	padding-right:0px;
+	width:355px;
+	/*font-size:100%;
+	width:385px;*/
+}
+
+.listTable {
+	width:500px;
+}
+
+.relative {
+	position: relative;
+}
+
+.tableLink { 
+  position:absolute; 
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+
+  /* edit: added z-index */
+  z-index: 1;
+
+  /* edit: fixes overlap error in IE7/8, 
+     make sure you have an empty gif */
+  background-image: url('/public/Blank.gif');
+}   

@@ -1,0 +1,1 @@
+[{"templateName": "Blank", "templateBody": ""}, {"templateName" : "A Really Long Name About Itself And Favorites", "templateBody" : "Q1: What is your favorite food?\n\n\nQ2: What is you favorite color?\n"}, {"templateName" : "Squid", "templateBody" : "What do you know about the squid invasion?\n\n\nQ2: Do you have any relevant loyalties?\n"}]

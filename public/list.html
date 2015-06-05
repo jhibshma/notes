@@ -1,0 +1,17 @@
+<p ng-if="!($parent.notesToUpload)">No Notes To List</p>
+<!-- (notesTaken.length === 0) -->
+<table class="table table-striped listTable" ng-if="$parent.notesToUpload">
+	<tbody>
+		<tr ng-repeat="note in notesTaken">
+			<td>
+				{{note.opportunityID}}
+			</td>
+			<td>
+				{{note.dateModified}}
+			</td>
+			<td>
+				<a ng-href="#/edit?index={{$index}}" class="btn btn-default">Edit</a>
+			</td>
+		</tr>
+	</tbody>
+</table>

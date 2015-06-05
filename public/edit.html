@@ -1,0 +1,15 @@
+<form>
+	<div class="form-group">
+		<label for="noteBody">Data</label>
+		<textarea ng-model="editedNote.noteBody" 
+			class="form-control" rows="23"></textarea>
+	</div>
+	<div class="form-group">
+		<label for="id">Opportunity ID</label>
+		<input ng-model="editedNote.opportunityID" 
+			type="text" class="form-control opID" />
+	</div>
+	<input type="button" class="btn btn-primary" ng-click="saveNote();" 
+		value="Save" />
+	<a href="#/list" class="btn btn-danger">Cancel</a>
+</form>

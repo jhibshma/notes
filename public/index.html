@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html lang="en" ng-app="main" manifest="/public/cache.appcache">
+	<head>
+		<title>We're using Bootstrap!!!</title>
+		<script src="/public/bower_components/angular/angular.js"></script>
+		<script src="/public/bower_components/angular-resource/angular-resource.js"></script>
+		<script src="/public/bower_components/angular-route/angular-route.js"></script>
+		<script src="/public/bower_components/jquery/dist/jquery.js"></script>
+		<script src="/public/bower_components/bootstrap/js/dropdown.js"></script>
+		<script src="/public/scripts/main.js"></script>
+		<link rel="stylesheet" type="text/css" 
+			href="/public/bower_components/bootstrap/dist/css/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="/public/styles.css">
+	</head>
+	<body ng-controller="mainCtrl">
+		<!-- Navbar -->
+		<nav role="navigation" class="navbar navbar-default">
+			<div id="navbarCollapse" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="#/list">LIST</a></li>
+					<li><a href="#/alt">ALTERNATE</a></li>
+					<li><a href="#/new">NEW NOTE</a></li>
+					<li ng-if="connected && notesToUpload" ng-click="uploadNotes();"><a href="#/list">UPLOAD</a></li>
+					
+					<li ng-if="!connected" ng-click="checkConnection();"><a>CHECK FOR CONNECTION</a>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#">Eventual Login Button?</a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<!--Behold!-->
+		<div ng-view class="mainDiv"></div>
+		<!-- 
+		<div class="mainDiv">
+			<div class="dropdown">
+				<br/>
+ 				<button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-success">
+    				New Note From Template
+    				<span class="caret"></span>
+  			</button>
+  			<ul class="dropdown-menu menu" role="menu" aria-labelledby="dLabel">
+    			<li ng-repeat="template in templates">
+    				<input type="button" value={{template.templateName}} 
+    					ng-click="startNoteFromTemplate(template);" class="btn btn-default menuButton" />
+    			</li>
+  			</ul>
+  			<button id="dLabel2" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-success">
+    				Edit Non-Uploaded Note
+    				<span class="caret"></span>
+ 				</button>
+ 				<ul class="dropdown-menu menu" role="menu" aria-labelledby="dLabel2">
+   				<li ng-repeat="template in templates">
+  					<input type="button" value={{template.templateName}} 
+   						ng-click="startNoteFromTemplate(template);" class="btn btn-default menuButton" />
+    			</li>
+  			</ul>	
+				<input type="button" class="btn btn-warning" 
+					ng-click="getTemplates();" value="Update Templates" />
+				<input type="button" class="btn btn-primary" ng-click="uploadNotes();"
+					value="Upload Notes" ng-if="(notesToUpload && connected)"/>
+			</div>
+
+			<br/><br/>
+
+			<form ng-if="takingNote">
+				<div class="form-group">
+					<label for="noteBody">Data</label>
+					<textarea ng-model="newNote.noteBody" 
+						class="form-control" rows="23"></textarea>
+				</div>
+				<div class="form-group">
+					<label for="id">Opportunity ID</label>
+					<input ng-model="newNote.opportunityID" 
+						type="text" class="form-control opID" />
+				</div>
+				<input type="button" class="btn btn-primary" ng-click="saveAndSubmit();" 
+					value="Save and Submit" />
+			</form>
+			
+			<br/><br/>
+			
+			<pre class="connection">Connection Status: {{(connected ? "Connected   " : "Disconnected")}}  <input type="button" class="btn btn-default" ng-click="checkConnection();" value="Refresh" /></pre>
+			<pre ng-if="hasMessage">{{message}}</pre>
+		</div> -->
+	</body>
+</html>

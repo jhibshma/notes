@@ -1,0 +1,27 @@
+<div class="dropdown" ng-if="!choseTemplate">
+ 	<button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-primary">
+    	Choose Template
+    	<span class="caret"></span>
+  	</button>
+  	<ul class="dropdown-menu menu" role="menu" aria-labelledby="dLabel">
+    	<li ng-repeat="template in templates">
+    		<input type="button" value={{template.templateName}} 
+    			ng-click="startNoteFromTemplate(template);" class="btn btn-default menuButton" />
+    	</li>
+  	</ul>
+</div>
+
+<form ng-if="choseTemplate">
+	<div class="form-group">
+		<label for="noteBody">Data</label>
+		<textarea ng-model="newNote.noteBody" 
+			class="form-control" rows="23"></textarea>
+	</div>
+	<div class="form-group">
+		<label for="id">Opportunity ID</label>
+		<input ng-model="newNote.opportunityID" 
+			type="text" class="form-control opID" />
+	</div>
+	<input type="button" class="btn btn-primary" ng-click="saveNote();" 
+		value="Save" />
+</form>
