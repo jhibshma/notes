@@ -1,15 +1,60 @@
-<form>
-	<div class="form-group">
-		<label for="noteBody">Data</label>
-		<textarea ng-model="editedNote.noteBody" 
-			class="form-control" rows="23"></textarea>
-	</div>
-	<div class="form-group">
-		<label for="id">Opportunity ID</label>
-		<input ng-model="editedNote.opportunityID" 
-			type="text" class="form-control opID" />
-	</div>
-	<input type="button" class="btn btn-primary" ng-click="saveNote();" 
-		value="Save" />
-	<a href="#/list" class="btn btn-danger">Cancel</a>
-</form>
+<div class="dropdown" ng-if="choosingTemplate">
+ 	<button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true"
+  aria-expanded="false" class="btn btn-default" ng-disabled="gettingTemplates">
+    Choose Template
+  	<span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu menu" role="menu" aria-labelledby="dLabel">
+  	<li ng-repeat="template in templates">
+  		<input type="button" value={{template.templateName}} 
+  			ng-click="startNoteFromTemplate(template);" class="btn btn-default 
+        menuButton" />
+  	</li>
+  </ul>
+  <input type="button" class="btn btn-default" ng-disabled="!connected || 
+    gettingTemplates" ng-click="getTemplatesFromSalesforce();" 
+    value="Get Templates" />
+</div>
+
+<div ng-if="readyForEditing">
+
+  <form>
+   <div class="form-group">
+      <label for="noteBody">Data</label>
+      <textarea ng-model="editedNote.noteBody" 
+        class="form-control" rows="23"></textarea>
+    </div>
+  </form>
+
+  <div ng-if="gettingOpps"><pre>{{gettingOpps}}</pre></div>
+  <div ng-if="!gettingOpps">
+    <input type="button" class="btn btn-default" ng-disabled="!connected"
+      ng-click="getOppsFromSalesforce();" value="Update Opportunites" />
+  </div>
+  <div ng-if="!gettingOpps" class="padTop5">
+    <ui-select ng-model="opp.selected" on-select="selectOpp($item, $model)">
+      <ui-select-match placeholder="Search for Opportunity...">
+        {{$select.selected.Name}}
+      </ui-select-match>
+      <ui-select-choices repeat="opp in opps | propsFilter: 
+        {Name:$select.search} | limitTo: 50">
+        <div ng-bind-html="opp.Name | highlight: $select.search"></div>
+        <div ng-bind-html="opp.Id | highlight: $select.search"></div>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+
+  <br/>
+
+  <form>
+    <div class="form-group">
+      <label for="id">Opportunity ID</label>
+      <input ng-model="editedNote.opportunityID" 
+        type="text" class="form-control opID" />
+    </div>
+  </form>
+
+  <input type="button" class="btn btn-primary" ng-click="saveNote();" 
+    value="Save" ng-disabled="!editedNote.opportunityID" />
+  <a href="#/list" class="btn btn-danger">Cancel</a>
+</div>

@@ -1,17 +1,55 @@
-<p ng-if="!($parent.notesToUpload)">No Notes To List</p>
-<!-- (notesTaken.length === 0) -->
-<table class="table table-striped listTable" ng-if="$parent.notesToUpload">
-	<tbody>
-		<tr ng-repeat="note in notesTaken">
-			<td>
-				{{note.opportunityID}}
-			</td>
-			<td>
-				{{note.dateModified}}
-			</td>
-			<td>
-				<a ng-href="#/edit?index={{$index}}" class="btn btn-default">Edit</a>
-			</td>
-		</tr>
-	</tbody>
-</table>
+<div class="row">
+	<div class="col-md-12">
+		<div class="alignRight padLeft5">
+			<a href="/#/edit?id=new"><input type="button" class="btn btn-default 
+				alignRight" value="+ New" ng-click=""></input></a>
+		</div>
+		<div class="alignRight">
+			<input type="button" class="btn btn-default alignRight" value="Upload"
+				ng-disabled="!notesToUpload || !connected" 
+				ng-click="uploadNotes()"></input>
+		</div>
+	</div>
+</div>
+
+<div class="row padTop5">
+	<div class="col-md-12">
+		<table class="table table-striped" ng-if="!notesToUpload">
+			<tbody>
+				<tr>
+					<td>
+						No Notes To List
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="table table-striped" ng-if="notesToUpload">
+			<thead>
+				<tr>
+					<th>
+						Actions
+					</th>
+					<th>
+						Opportunity
+					</th>
+					<th>
+						Date Modified
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="note in notesTaken">
+					<td>
+						<a ng-href="#/edit?id={{$index}}" class="btn btn-default">Edit</a>
+					</td>
+					<td>
+						{{note.opportunityName}}
+					</td>
+					<td>
+						{{note.dateModified}}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
