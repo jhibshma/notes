@@ -1,51 +1,44 @@
-<div class="row">
-	<div class="col-md-12">
-		<div class="alignRight padLeft5">
-			<a href="/#/edit?id=new"><input type="button" class="btn btn-default 
-				alignRight" value="+ New" ng-click=""></input></a>
-		</div>
-		<div class="alignRight">
-			<input type="button" class="btn btn-default alignRight" value="Upload"
-				ng-disabled="!notesToUpload || !connected" 
-				ng-click="uploadNotes()"></input>
-		</div>
-	</div>
-</div>
-
 <div class="row padTop5">
 	<div class="col-md-12">
-		<table class="table table-striped" ng-if="!notesToUpload">
-			<tbody>
-				<tr>
-					<td>
-						No Notes To List
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<table class="table table-striped" ng-if="notesToUpload">
+		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>
+					<th class="actionsCol">
 						Actions
 					</th>
-					<th>
+					<th class="oppCol">
 						Opportunity
 					</th>
-					<th>
-						Date Modified
+					<th class="dmCol">
+						<span class="bottom">Date Modified</span>
+						<div class="alignRight padLeft5">
+							<button type="button" class="btn btn-default alignRight" 
+								data-toggle="modal" data-target="#new" 
+								ng-click="getTemplatesFromStorage()">+ New</button>
+						</div>
+						<div class="alignRight">
+							<input type="button" class="btn btn-default alignRight" 
+								value="Upload" ng-disabled="!notesToUpload || !connected" 
+								ng-click="uploadNotes()"></input>
+						</div>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="note in notesTaken">
-					<td>
-						<a ng-href="#/edit?id={{$index}}" class="btn btn-default">Edit</a>
+				<tr ng-if="!notesToUpload">
+					<td class="actionsCol">
+						No Notes To List
 					</td>
-					<td>
+					<td class="oppCol"></td><td class="dmCol"></td>
+				</tr>
+				<tr ng-repeat="note in notes" ng-if="notesToUpload">
+					<td class="actionsCol">
+						<a ng-href="#/edit?mode=edit&note={{$index}}" class="btn btn-default">Edit</a>
+					</td>
+					<td class="oppCol">
 						{{note.opportunityName}}
 					</td>
-					<td>
+					<td class="dmCol">
 						{{note.dateModified}}
 					</td>
 				</tr>
@@ -53,3 +46,41 @@
 		</table>
 	</div>
 </div>
+
+<!-- Popup: -->
+<div class="modal fade" id="new" aria-labelledby="newLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Note</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="padBot5">
+      		<mystery class="middle">Select Template:</mystery>
+      		<input type="button" class="btn btn-default alignRight" 
+      			ng-disabled="gettingTemplates || !connected" 
+      			value="Download Templates" 
+      			ng-click="getTemplatesFromSalesforce()" />
+      	</div>
+			  <div ng-if="!gettingTemplates" class="padTop5">
+			    <ui-select ng-model="template.selected" on-select="selectTemplate($item, $model)">
+			      <ui-select-match placeholder="Search for Template...">
+			        {{$select.selected.title}}
+			      </ui-select-match>
+			      <ui-select-choices repeat="template in templates | propsFilter: 
+			        {title:$select.search} | limitTo: 50">
+			        <div ng-bind-html="template.title | highlight: $select.search"></div>
+			      </ui-select-choices>
+			    </ui-select>
+			  </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <input type="button" class="btn btn-success" data-dismiss="modal"
+        	ng-click="startNote()" ng-disabled="!chosenTemplate"
+        	value="Create Note" />
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

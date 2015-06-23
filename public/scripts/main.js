@@ -31,16 +31,17 @@ main.filter('propsFilter', function() {
   }
 });
 
+
 main.config(['$routeProvider', '$locationProvider', 
 	function($routeProvider, uiSelectConfig, $locationProvider) {
 	$routeProvider.
-		when("/edit", {
-			templateUrl: "/public/edit.html",
-			controller: "editCtrl"
-		}).
 		when("/list", {
 			templateUrl: "/public/list.html",
 			controller: "listCtrl"
+		}).
+		when("/edit", {
+			templateUrl: "/public/edit.html",
+			controller: "editCtrl"
 		}).
 		otherwise({
 			redirectTo: "/list"
@@ -51,37 +52,234 @@ main.config(['$routeProvider', '$locationProvider',
 		//uiSelectConfig.appendToBody = true;
 }]);
 
-main.controller("listCtrl", function($scope) {
-	$scope.notesTaken = [];
+main.controller("editCtrl", function ($scope, $location, generateHtml) {
+	$scope.note = {};
+	var index;
+
+	function leavePage() {
+		$location.path("/list");
+	}
+
+	function getFromStorageArray(arr, index) {
+		var array;
+		if(typeof Storage !== "undefined") {
+			if(localStorage[arr]) {
+				array = JSON.parse(localStorage[arr]);
+				if(index > -1 && index < array.length) {
+					return array[index];
+				}
+			}
+		}
+		return null;
+	}
+
+	function prepareNote() {
+		var query = $location.search();
+		var mode = query.mode;
+		var template, note;
+
+		if(!mode) {
+			$location.path("/list");
+			return;
+		} else if(mode === "new") {
+			template = query.template;
+			if(!template || parseInt(template) === NaN) {
+				leavePage();
+				return;
+			}
+			//changing template's 'type' here:
+			template = getFromStorageArray("templates", parseInt(template));
+			if(!template) {
+				leavePage();
+				return;
+			}
+			index = -1;
+			$scope.note = template;
+
+		} else if(mode === "edit") {
+			note = query.note;
+			console.log(note);
+			if(!note || parseInt(note) === NaN) {
+				leavePage();
+				return;
+			}
+			//changing template's 'type' here:
+			index = parseInt(note);
+			note = getFromStorageArray("notes", parseInt(note));
+			if(!note) {
+				leavePage();
+				return;
+			}
+			$scope.note = note;
+		}
+	}
+
+	$scope.saveNote = function() {
+		var notes = [];
+		if(typeof Storage === "undefined") {
+			leavePage();
+			return;
+		}
+		if(localStorage.notes) {
+			notes = JSON.parse(localStorage.notes);
+		}
+		$scope.note.dateModified = moment().format('MMMM Do YYYY, h:mm:ss a');
+		if(index === -1) {
+			notes.push($scope.note);
+		} else {
+			notes[index] = $scope.note;
+		}
+		localStorage.notes = JSON.stringify(notes);
+		leavePage();
+	}
+
+	$scope.cancelNote = function () {
+		leavePage();
+	}
+
+	prepareNote();
+	//console.log($scope.note);
+	console.log(generateHtml($scope.note, "note"));
+}).
+directive("theHtmlForm", function (generateHtml) {
+	
+	return {
+		//scope: "stuff",
+   	template: "{{note}}\n" + 
+   		generateHtml(JSON.parse(localStorage.templates)[1], "note")
+  };
+	
+	
+}).factory("generateHtml", function () {
+
+  // function ObjectCopy(obj) {
+  //   function F () {}
+  //   F.prototype = obj;
+  //   return new F();
+  // }
+
+  function getCssClass(type) {
+    if(type === "number") {
+      return "form-control numberInput";
+    } else if(type === "text") {
+      return "form-control textInput";
+    } else if(type === "textarea") { //textarea vs. textArea
+      return "form-control textareaInput";
+    } else if(type === "checkbox") {
+      return "checkbox checkboxInput";
+    } else if(type === "radio") {
+      return "radio radioInput";
+    } else if(type === "selectionlist") {
+      return "form-control selectionlistInput";
+    } else if(type === "none") {
+      return "noInput";
+    }
+    return null;
+  }
+
+  //formAddress is the scope address which the generated
+  //html should access the form at
+  return function (form, formAddress) {
+  	//console.log(form);
+  	//console.log(formAddress);
+    var html = "";
+    var q;
+    var cssClass;
+    var tag, qPath;
+
+    html += "<p class=\"title\">" + form.title + "</p>\n";
+
+    for(var i = 0; i < form.sections.length; i++) {
+      html += "<p class=\"sectionTitle\">" + form.sections[i].title + "</p>\n";
+      for(var j = 0; j < form.sections[i].questions.length; j++) {
+        q = form.sections[i].questions[j];
+
+        if(q.type === "none") {
+          html += "<p class=\"" + getCssClass(q.type) + "\">" + 
+            q.question + "</p>\n";
+
+        } else if(q.type === "checkbox") {
+          cssClass = getCssClass(q.type);
+          qPath = formAddress + ".sections[" + i + "].questions[" + j + "]";
+
+          html += "<div class=\"" + cssClass + "\" ";
+          html += "ng-repeat=\"q in " + qPath + ".question ";
+          html += "track by $index\" >\n";
+          html += "  <label><input type=\"checkbox\" ";
+          html += "ng-model=\"" + qPath + ".answer[$index]\" ";
+          html += "name=\"" +i+j+ "\">";
+          html += "{{q}}</label>\n";
+          html += "</div>\n";
+
+        } else if(q.type === "radio") {
+          cssClass = getCssClass(q.type);
+          qPath = formAddress + ".sections[" + i + "].questions[" + j + "]";
+
+          html += "<div class=\"" + cssClass + "\" ";
+          html += "ng-repeat=\"q in " + qPath + ".question\">\n";
+          html += "  <label><input type=\"radio\" ";
+          html += "name=\"" +i+j+ "\" ";
+          html += "ng-model=\"" + qPath + ".answer\" ";
+          html += "value=\"{{q}}\">{{q}}</label>\n";
+          html += "</div>\n";
+
+
+        } else if(q.type === "selectionlist") {
+          cssClass = getCssClass(q.type);
+          qPath = formAddress + ".sections[" + i + "].questions[" + j + "]";
+          html += "<div class=\"form-group\">\n";
+          html += "  <label for=\"" +i+j+ "\"></label>\n";
+          html += "  <select class=\"" + cssClass + "id=\"" +i+j+ "\" ";
+          html += "ng-model=\"" + qPath + ".answer\" >\n";
+          html += "    <option ng-repeat=\"q in " + qPath + ".question\">";
+          html += "{{q}}</option>\n";
+          html += "  </select>\n";
+          html += "</div>\n";
+
+        } else {
+          cssClass = getCssClass(q.type);
+          qPath = formAddress + ".sections[" + i + "].questions[" + j + "]";
+          tag = (q.type === "textarea" ? "textarea" : "input");
+
+          html += "<form>\n";
+          html += "  <div class=\"form-group\">\n";
+          html += "    <label for=\"" + q.question + "\">" + q.question + 
+            "</label>\n";
+          html += "    <" + tag + " type=\"" + q.type + "\" class=\"" + 
+            cssClass + "\" ng-model=\"" + qPath + ".answer\" id=\"" 
+            + q.question + "\"></" + tag + ">\n";
+          html += "  </div>\n";
+          html += "</form>\n";
+        }
+      }
+    }
+
+    //console.log(html);
+    return html;
+  }
+});
+
+main.controller("listCtrl", function ($scope, $http, $location) {
+	
+	$scope.template = {
+		selected: undefined
+	};
+	$scope.chosenTemplate = false;
+	var id;
+	$scope.templates = [];
+	$scope.notes = [];
 	$scope.setNotesToUpload(false);
+	$scope.gettingTemplates = false;
 
 	if(typeof Storage !== "undefined") {
-		if(localStorage.notesTaken) {
-			$scope.notesTaken = JSON.parse(localStorage.notesTaken);
+		if(localStorage.notes) {
+			$scope.notes = JSON.parse(localStorage.notes);
 			$scope.setNotesToUpload(true);
 		}
 	}
 
-});
-
-main.controller('editCtrl', function ($scope, $location, $http) {
-	var notesTaken = [];
-	$scope.readyForEditing = false;
-	$scope.choosingTemplate = false;
-	$scope.templates = [];
-	$scope.oppChosen = null;
-	$scope.gettingTemplates = false;
-	$scope.opp = {
-		selected: null
-	}
-
-	$scope.editedNote = {
-		noteBody: undefined,
-		opportunityID: undefined,
-		opportunityName: undefined
-	};
-
-	function getTemplatesFromStorage() {
+	$scope.getTemplatesFromStorage = function() {
+		$scope.chosenTemplate = false;
 		$scope.gettingTemplates = true;
 		if(typeof Storage !== "undefined") {
 			if(localStorage.templates) {
@@ -94,7 +292,9 @@ main.controller('editCtrl', function ($scope, $location, $http) {
 	}
 
 	$scope.getTemplatesFromSalesforce = function() {
+		$scope.chosenTemplate = false;
 		$scope.gettingTemplates = true;
+		$scope.template.selected = undefined;
 		$http.get("/api/templates").
 			success(function(data, status, headers, config) {
 				localStorage.templates = JSON.stringify(data);
@@ -105,92 +305,27 @@ main.controller('editCtrl', function ($scope, $location, $http) {
 			});
 	}
 
-	$scope.startNoteFromTemplate = function(template) {
-		$scope.editedNote.noteBody = template.templateBody;
-		$scope.choosingTemplate = false;
-		$scope.readyForEditing = true;
-	}
-
-	function setUpNote() {
-		var query = $location.search();
-		var id = query.id;
-		var opps;
-
-		if(!id) {
-			$location.path("#/list");
-
-		} else if(id === "new") {
-
-			if(localStorage.notesTaken) {
-				notesTaken = JSON.parse(localStorage.notesTaken);
-			} else {
-				notesTaken = [];
+	$scope.selectTemplate = function (item, model) {
+		for(var i = 0; i < $scope.templates.length; i++)
+		{
+			if($scope.templates[i].title === item.title)
+			{
+				$scope.chosenTemplate = true;
+				id = i;
+				return;
 			}
-			
-			notesTaken.push($scope.editedNote);
-			$scope.editedNote = notesTaken[notesTaken.length - 1];
-
-			getTemplatesFromStorage();
-			$scope.choosingTemplate = true;
-
-		} else {
-			notesTaken = JSON.parse(localStorage.notesTaken);
-			$scope.editedNote = notesTaken[id];
-			opps = $scope.getOpps();
-			for(var i = 0; i < opps.length; i++) {
-				if(opps[i].Id === $scope.editedNote.opportunityID) {
-					$scope.opp.selected = opps[i];
-					break;
-				}
-			}
-
-			$scope.readyForEditing = true;
 		}
 	}
 
-	$scope.saveNote = function() {
-		$scope.editedNote.dateModified = moment().format('MMMM Do YYYY, h:mm:ss a');
-		localStorage.notesTaken = JSON.stringify(notesTaken);
-		$location.path("#/list");
+	$scope.startNote = function () {
+		$location.url("/edit?mode=new&template=" + id);
 	}
-
-	function pullOppsFromStorage() {
-		if(typeof Storage !== "undefined" && localStorage.opps) {
-			$scope.setOpps(JSON.parse(localStorage.opps));
-		}
-		else {
-			$scope.setOpps([]);
-		}
-		$scope.setGettingOpps(false);
-	}
-
-	$scope.getOppsFromSalesforce = function () {
-		$scope.setGettingOpps("Fetching Opportunities");
-		$http.get("/api/salesforce/opportunity").
-			success(function(data, status, headers, config) {
-				$scope.setOpps(data);
-				localStorage.opps = JSON.stringify(data);
-				$scope.setGettingOpps(false);
-			}).error(function() {
-				//$scope.setGettingOpps("Fetch Failed");
-			});
-	}
-
-	$scope.selectOpp = function (item, model) {
-		$scope.editedNote.opportunityID = item.Id;
-		$scope.editedNote.opportunityName = item.Name;
-	}
-	
-
-	if($scope.getGettingOpps()) {
-		pullOppsFromStorage();
-	}
-	setUpNote();
 
 });
 
 
-main.controller("mainCtrl", function ($scope, $http) {
+main.controller("mainCtrl", function ($scope, $http, $location) {
+
 	$scope.notesToUpload = false;
 
 	$scope.gettingOpps = "Fetching Opportunities";
@@ -200,59 +335,63 @@ main.controller("mainCtrl", function ($scope, $http) {
 		noteBody: undefined,
 		opportunityID: undefined,
 			//dateModified: undefined
-		};
+	};
 
-		$scope.connected = false;
-		$scope.message = "";
-		$scope.hasMessage = false;
+	$scope.connected = false;
+	$scope.message = "";
+	$scope.hasMessage = false;
 
-		$scope.getConnected = function () {
-			return $scope.connected;
-		}
+	$scope.getConnected = function () {
+		return $scope.connected;
+	}
 
-		$scope.setNotesToUpload = function(tf) {
-			$scope.notesToUpload = tf;
-		}
+	$scope.setNotesToUpload = function(tf) {
+		$scope.notesToUpload = tf;
+	}
 
-		$scope.setGettingOpps = function (go) {
-			$scope.gettingOpps = go;
-		}
+	$scope.setGettingOpps = function (go) {
+		$scope.gettingOpps = go;
+	}
 
-		$scope.getGettingOpps = function () {
-			return $scope.gettingOpps;
-		}
+	$scope.getGettingOpps = function () {
+		return $scope.gettingOpps;
+	}
 
-		$scope.setOpps = function (o) {
-			$scope.opps = o;
-		}
+	$scope.setOpps = function (o) {
+		$scope.opps = o;
+	}
 
-		$scope.getOpps = function () {
-			return $scope.opps;
-		}
+	$scope.getOpps = function () {
+		return $scope.opps;
+	}
 
-		$scope.uploadNotes = function () {
-			$http.post("/api/upload", localStorage.notesTaken).
-			success(function(data, status, headers, config) {
-					$scope.message = "Data Sent";
-					$scope.hasMessage = true;
-					localStorage.removeItem("notesTaken");
-					$scope.notesToUpload = false;
-				}).error(function(data, status, headers, config) {
-					$scope.message = "Send Failed";
-					$scope.hasMessage = true;
-					$scope.notesToUpload = true;
-				});
-		}
-		
-		function checkConnection () {
-			$http.get("/api/check").
-			success(function(data, status, headers, config) {
-					$scope.connected = true;
-				}).error(function(data, status, headers, config) {
-					$scope.connected = false;
-				});
-		}
+	$scope.uploadNotes = function () {
+		$http.post("/api/upload", localStorage.notes).
+		success(function(data, status, headers, config) {
+				$scope.message = "Data Sent";
+				$scope.hasMessage = true;
+				localStorage.removeItem("notes");
+				$scope.notesToUpload = false;
+			}).error(function(data, status, headers, config) {
+				$scope.message = "Send Failed";
+				$scope.hasMessage = true;
+				$scope.notesToUpload = true;
+			});
+	}
+	
+	function checkConnection () {
+		$http.get("/api/check").
+		success(function(data, status, headers, config) {
+				$scope.connected = data === "check";
+				if(data === "login") {
+					window.location.assign("https://dev.notes.candoris.com:1337/login");
+				}
+				//console.log(data);
+			}).error(function(data, status, headers, config) {
+				$scope.connected = false;
+			});
+	}
 
-		checkConnection(); //because setInterval waits 10 secs to get started
-		var checkIntervalId = window.setInterval(checkConnection, 10000);
-	});
+	checkConnection(); //because setInterval waits 10 secs to get started
+	var checkIntervalId = window.setInterval(checkConnection, 10000);
+});

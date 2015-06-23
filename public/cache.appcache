@@ -8,14 +8,16 @@ CACHE MANIFEST
 /public/bower_components/jquery/dist/jquery.js
 /public/bower_components/bootstrap/dist/css/bootstrap.css
 /public/bower_components/bootstrap/js/dropdown.js
+/public/bower_components/bootstrap/js/modal.js
 /public/bower_components/moment/moment.js
 /public/scripts/main.js
 /public/styles.css
 /public/index.html
 /public/list.html
 /public/edit.html
+/public/fancyEdit.html
 
 NETWORK:
 *
 
-#Comment 0
+#Comment 1

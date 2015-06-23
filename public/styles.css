@@ -1,15 +1,13 @@
 @charset "utf-8";
 /* CSS Document */
 
+/* class for the div that all the mini-pages live in */
 .mainDiv {
 	padding-left:30px;
 	padding-right:30px;
 }
 
-.opID {
-	width:200px;
-}
-
+/* classes for bootstrap drowdowns (non-searchable) */
 .menuButton {
 	width:100%;
 	border-radius:0px;
@@ -20,40 +18,9 @@
 	padding-top:0px;
 	padding-bottom:0px;
 }
+/* end said classes
 
-
-.connection {
-	padding-top:0px;
-	padding-bottom:0px;
-	padding-right:0px;
-	width:355px;
-	/*font-size:100%;
-	width:385px;*/
-}
-
-.relative {
-	position: relative;
-}
-
-.tableLink {
-  position:absolute; 
-  width:100%;
-  height:100%;
-  top:0;
-  left: 0;
-
-  /* edit: added z-index */
-  z-index: 1;
-
-  /* edit: fixes overlap error in IE7/8, 
-     make sure you have an empty gif */
-  background-image: url('/public/Blank.gif');
-}
-
-.opportunity {
-  font-size:100%;
-}
-
+/* classes used for the list page: */
 .alignRight {
   float: right;
 }
@@ -65,3 +32,60 @@
 .padLeft5 {
   padding-left: 5px;
 }
+
+.padBot5 {
+  padding-bottom: 5px;
+}
+
+.bottom {
+  vertical-align: -100%;
+}
+
+.middle {
+  vertical-align: -50%;
+}
+
+.actionsCol {
+  width: 10%;
+}
+
+.oppCol {
+  width: 30%;
+}
+
+.dmCol {
+  width: 60%
+}
+/* end said classes */
+
+/* classes for the dynamic form inputs: */
+.title { /* Main page title */
+  color: #11AA44;
+  font-size: 36px;
+}
+.sectionTitle {
+  color: #11AA44;
+  font-size: 20px;
+}
+.noInput {
+  /* font-weight: bold; */
+}
+.textInput {
+
+}
+.textareaInput {
+  min-height: 110px;
+}
+.numberInput {
+
+}
+.checkboxInput {
+
+}
+.radioInput {
+
+}
+.selectionlistInput {
+
+}
+/* end said classes */
