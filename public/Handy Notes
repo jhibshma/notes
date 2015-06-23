@@ -9,3 +9,17 @@ ng-disabled
 Repeatedly Check Connection with setInterval  /
 
 fixed-position navbar
+
+
+
+markdown in salesforce
+dsl in salesforce
+express salesforce oauth (node)
+passportjs ^^^^^
+formaya
+
+input box, textarea, select-dropdown, checkbox, ... 
+(all html5 form types (but not email, password, etc.))
+
+$watch 
+angular.copy(obj)

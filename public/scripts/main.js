@@ -57,7 +57,7 @@ main.controller("editCtrl", function ($scope, $location, generateHtml) {
 	var index;
 
 	function leavePage() {
-		$location.path("/list");
+		$location.url("/list");
 	}
 
 	function getFromStorageArray(arr, index) {
@@ -79,7 +79,7 @@ main.controller("editCtrl", function ($scope, $location, generateHtml) {
 		var template, note;
 
 		if(!mode) {
-			$location.path("/list");
+			leavePage();
 			return;
 		} else if(mode === "new") {
 			template = query.template;
@@ -138,25 +138,25 @@ main.controller("editCtrl", function ($scope, $location, generateHtml) {
 	}
 
 	prepareNote();
-	//console.log($scope.note);
-	console.log(generateHtml($scope.note, "note"));
+
+	$scope.readyForHtml = true;
 }).
-directive("theHtmlForm", function (generateHtml) {
+directive("theHtmlForm", function (generateHtml, $compile) {
 	
-	return {
-		//scope: "stuff",
-   	template: "{{note}}\n" + 
-   		generateHtml(JSON.parse(localStorage.templates)[1], "note")
+	function link(scope, element, attrs) {
+
+    scope.$watch(scope.readyForHtml, function(value) {
+      element.html($compile(generateHtml(scope.note, "note"))(scope));
+
+    });
+  }
+
+  return {
+    link: link
   };
 	
 	
 }).factory("generateHtml", function () {
-
-  // function ObjectCopy(obj) {
-  //   function F () {}
-  //   F.prototype = obj;
-  //   return new F();
-  // }
 
   function getCssClass(type) {
     if(type === "number") {
