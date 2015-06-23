@@ -1,16 +1,20 @@
 var template = {
-  title: string,
-  sections: [
-    {
-      title: string,
-      questions: [
-        {
-          type: string,
-          question: string (or array of strings for checkbox, radio, selectionlist),
-          answer: determined by type
-        }
-      ]
-    }
-  ]
+  dateModified: slfjlsjdfsd,
+  opportunityID: ljsdfljds,
+  form: {
+    title: string,
+    sections: [
+      {
+        title: string,
+        questions: [
+          {
+            type: string,
+            question: string (or array of strings for checkbox, radio, selectionlist),
+            answer: determined by type
+          }
+        ]
+      }
+    ]
+  }
 };
 
